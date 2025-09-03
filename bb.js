@@ -1,4 +1,4 @@
-const adUrl = "https://dowryhandgripballot.com/pjre995d?key=add98ddf8370c965733a4b4e6d546f6d";
+const adUrl = "https://dowryhandgripballot.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9";
 const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
 const loader = document.getElementById('loader');
@@ -62,3 +62,4 @@ window.addEventListener('pageshow', function(event) {
     fakeLoading(1000);
   }
 });
+

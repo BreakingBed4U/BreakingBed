@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="02.png">
 <title>Breaking Bed Video Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
@@ -101,6 +102,46 @@ button {
   white-space: pre-wrap;
 }
 
+.pulse {
+  animation: pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(30,144,255,0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
+}
+
+/* Tiny notification overlay */
+#notification {
+  position: absolute;
+  bottom: 80px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 2.5vw;
+  color: #00aaff;
+  display: none;
+  z-index: 10;
+  text-align: center;
+  max-width: 90%;
+}
+
+#notification button {
+  margin-top: 6px;
+  padding: 4px 12px;
+  font-size: 2.5vw;
+  border-radius: 6px;
+  background: rgba(30,144,255,0.9);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Watermark link */
 .watermark {
   position: absolute;
   bottom: 10px;
@@ -109,17 +150,12 @@ button {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.6);
   z-index: 2;
-  pointer-events: none;
-  user-select: none;
+  pointer-events: auto;
 }
 
-.pulse {
-  animation: pulse 1.2s infinite ease-in-out;
-}
-@keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
-  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(30,144,255,0.9); }
-  100% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
+.watermark a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
 }
 </style>
 </head>
@@ -139,7 +175,17 @@ button {
 <button id="groupBtn">SimpCityLK Telegram</button>
 <button id="clipsBtn">SimpCityLK Clips</button>
 <button id="siteBtn">SimpCityLK Website</button>
-<div class="watermark">Powered by <sup>XVIPP</sup></div>
+
+<!-- Notification -->
+<div id="notification">
+   විඩීයෝ එක බලන්න ඕනි නම් Link එක Copy කරලා Web Browser එකක Paste කරන්න ඕනි.Facebook Default Web Interface එකෙන් විඩීයෝ එක Unlock කරන්න බෑ.Link එක Copy කරන්න ඕනි නම් වම් පැත්තේ උඩ තියෙන තිත් තුන Click කරලා Copy Link හෝ Open In Internal Browser දෙන්න.
+  <button id="notifOkBtn">Okay</button>
+</div>
+
+<!-- Watermark with ad link -->
+<div class="watermark">
+  <a href="https://bouncelightenafternoon.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9" target="_blank">Visit Our Sponsor</a>
+</div>
 
 <script>
 const adUrl = "https://bouncelightenafternoon.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9";
@@ -149,10 +195,11 @@ const unlockBtn = document.getElementById('unlockBtn');
 const groupBtn = document.getElementById('groupBtn');
 const clipsBtn = document.getElementById('clipsBtn');
 const siteBtn = document.getElementById('siteBtn');
-const earlyCloseMsg = document.getElementById('earlyCloseMsg');
 const statusText = document.getElementById('statusText');
 const awayText = document.getElementById('awayText');
 const bgImage = document.getElementById('bgImage');
+const notification = document.getElementById('notification');
+const notifOkBtn = document.getElementById('notifOkBtn');
 
 let totalAwaySeconds = 0;
 const maxAway = 8;
@@ -171,18 +218,25 @@ setTimeout(() => {
   clearInterval(interval);
   loader.style.display = 'none';
   progressText.style.display = 'none';
-  
+
+  // Show notification first
+  notification.style.display = 'block';
+}, 2000);
+
+// Hide notification on Okay
+notifOkBtn.addEventListener('click', () => {
+  notification.style.display = 'none';
+
+  // Show rest of content
   statusText.style.display = 'block';
   bgImage.style.opacity = '1';
-
   unlockBtn.style.display = 'flex';
   unlockBtn.classList.add('pulse');
-}, 2000);
+});
 
 unlockBtn.addEventListener('click', () => {
   adWindow = window.open(adUrl, "_blank");
   unlockBtn.style.display = 'none';
-  earlyCloseMsg.style.display = 'none';
   awayText.style.display = 'block';
   totalAwaySeconds = 0;
   startAwayTimer();
@@ -230,6 +284,7 @@ clipsBtn.addEventListener('click', () => window.open("https://t.me/+yFvMxNRLu4g3
 siteBtn.addEventListener('click', () => window.open("https://simpcitylk.neocities.org", "_blank"));
 
 function showMessage(text) {
+  const earlyCloseMsg = document.getElementById('earlyCloseMsg');
   earlyCloseMsg.textContent = text;
   earlyCloseMsg.style.display = 'block';
 }

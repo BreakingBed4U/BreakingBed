@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <title>Breaking Bed Video Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="02.png">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
 <style>
 body {
   margin: 0;
@@ -16,11 +15,12 @@ body {
   align-items: center;
   background: linear-gradient(135deg, #1a1a2e, #162447, #1f4068);
   overflow: hidden;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto Condensed', sans-serif;
   color: #fff;
   padding: 0 10px;
   box-sizing: border-box;
 }
+
 img {
   width: 100%;
   height: 100%;
@@ -34,11 +34,9 @@ img {
   animation: fadeIn 2s forwards;
   pointer-events: none;
   user-select: none;
-  alt: "";
+  transition: opacity 1s ease;
 }
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
+
 .loader {
   border: 6px solid rgba(255, 255, 255, 0.2);
   border-top: 6px solid #fff;
@@ -49,74 +47,192 @@ img {
   z-index: 1;
   margin-bottom: 15px;
 }
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.progress-text {
-  font-size: 18px;
-  font-family: 'Roboto Condensed', sans-serif;
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.progress-text, .status-text, #awayText {
+  font-size: 30px;
   z-index: 1;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  color: #00aaff;
 }
-.dots::after {
-  content: '';
-  animation: dots 1s steps(3, end) infinite;
-}
-@keyframes dots {
-  0% { content: ''; }
-  33% { content: '.'; }
-  66% { content: '..'; }
-  100% { content: '...'; }
-}
-.redirect-message {
-  font-size: 16px;
+
+button {
+  min-width: 200px;
+  min-height: 50px;
+  padding: 12px 30px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  justify-content: center;
+  align-items: center;
   font-family: 'Roboto Condensed', sans-serif;
-  color: rgba(255,255,255,0.8);
-  z-index: 1;
-  text-align: center;
-  margin-top: 10px;
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+  letter-spacing: 1px;
+  transition: transform 0.3s, background 0.3s;
+  touch-action: manipulation;
+  margin: 8px;
+  display: none; /* hidden by default */
 }
+
+#unlockBtn { background: rgba(30,144,255,0.9); }
+#unlockBtn:hover { background: rgba(0,191,255,0.95); }
+
+#groupBtn, #clipsBtn, #siteBtn {
+  background: rgba(30,144,255,0.9);
+}
+#groupBtn:hover, #clipsBtn:hover, #siteBtn:hover {
+  background: rgba(0,191,255,0.95);
+}
+
+#earlyCloseMsg {
+  display: none;
+  position: relative;
+  font-family: 'Roboto Condensed', monospace;
+  font-size: 30px;
+  color: #00aaff;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 15px;
+  white-space: pre-wrap;
+}
+
 .watermark {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  font-family: 'Roboto Condensed', sans-serif;
   font-weight: 400;
-  font-size: 12px; /* tiny text */
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.6);
   z-index: 2;
   pointer-events: none;
   user-select: none;
 }
+
+.pulse {
+  animation: pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(30,144,255,0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
+}
 </style>
 </head>
 <body>
-<img src="image.png" alt="">
-
+<img id="bgImage" src="https://i.ibb.co/fs0MqMN/01.jpg" alt="01" border="0">
 <div class="loader" id="loader"></div>
-<div class="progress-text" id="progressText">Accessing video<span class="dots"></span></div>
-<div class="redirect-message">You will be redirected to another page shortly.</div>
+<div class="progress-text" id="progressText">Accessing Video<span class="dots"></span></div>
 
-<!-- Powered by ConneFi -->
-<div class="watermark">Powered by <sup>ConneFi</sup></div>
+<div class="status-text" id="awayText" style="display:none;">You have been away 0/8s</div>
+
+<div class="status-text" id="statusText" style="display:none;">
+“Unlock ” බොත්තම ඔබන්න. එවිට ඇඩ් එකක් ඕපන් වේ. තත්පර 8ක් ඇඩ් එකේ රැදී සිට නැවත මේ පිටුවටම එන්න. ඇඩ් එක ක්ලෝස් කලහොත් වීඩියෝව අන්ලොක් නොවේ.
+</div>
+
+<div id="earlyCloseMsg"></div>
+<button id="unlockBtn">Unlock</button>
+<button id="groupBtn">SimpCityLK Telegram</button>
+<button id="clipsBtn">SimpCityLK Clips</button>
+<button id="siteBtn">SimpCityLK Website</button>
+<div class="watermark">Powered by <sup>XVIPP</sup></div>
 
 <script>
-const adUrl = "https://dowryhandgripballot.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9";
+const adUrl = "https://bouncelightenafternoon.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9";
 const progressText = document.getElementById('progressText');
-let progress = 0;
+const loader = document.getElementById('loader');
+const unlockBtn = document.getElementById('unlockBtn');
+const groupBtn = document.getElementById('groupBtn');
+const clipsBtn = document.getElementById('clipsBtn');
+const siteBtn = document.getElementById('siteBtn');
+const earlyCloseMsg = document.getElementById('earlyCloseMsg');
+const statusText = document.getElementById('statusText');
+const awayText = document.getElementById('awayText');
+const bgImage = document.getElementById('bgImage');
 
+let totalAwaySeconds = 0;
+const maxAway = 8;
+let timerInterval;
+let adWindow;
+
+// Progress animation
+let progress = 0;
 const interval = setInterval(() => {
   progress += Math.floor(Math.random() * 10) + 5;
-  if (progress >= 100) progress = 100;
-  progressText.textContent = `Accessing video ${progress}%`;
+  if(progress >= 100) progress = 100;
+  progressText.textContent = `Accessing Video ${progress}%`;
 }, 100);
 
 setTimeout(() => {
   clearInterval(interval);
-  window.location.href = adUrl;
+  loader.style.display = 'none';
+  progressText.style.display = 'none';
+  
+  statusText.style.display = 'block';
+  bgImage.style.opacity = '1';
+
+  unlockBtn.style.display = 'flex';
+  unlockBtn.classList.add('pulse');
 }, 2000);
+
+unlockBtn.addEventListener('click', () => {
+  adWindow = window.open(adUrl, "_blank");
+  unlockBtn.style.display = 'none';
+  earlyCloseMsg.style.display = 'none';
+  awayText.style.display = 'block';
+  totalAwaySeconds = 0;
+  startAwayTimer();
+});
+
+function startAwayTimer() {
+  if(timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    if(adWindow && adWindow.closed) {
+      clearInterval(timerInterval);
+      totalAwaySeconds = 0;
+      awayText.style.display = 'none';
+      unlockBtn.style.display = 'flex';
+      showMessage(`ඔබ Ad එක තත්පර 8 කට කලින් Close කර ඇත. නැවත උත්සාහ කරන්න.`);
+      return;
+    }
+
+    if(document.hidden) {
+      totalAwaySeconds++;
+      awayText.textContent = `You have been away ${totalAwaySeconds}/${maxAway}s`;
+
+      if(totalAwaySeconds >= maxAway) {
+        clearInterval(timerInterval);
+        awayText.style.display = 'none';
+        groupBtn.style.display = 'flex';
+        clipsBtn.style.display = 'flex';
+        siteBtn.style.display = 'flex';
+        groupBtn.classList.add('pulse');
+        clipsBtn.classList.add('pulse');
+        siteBtn.classList.add('pulse');
+      }
+    }
+  }, 1000);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if(!document.hidden && totalAwaySeconds < maxAway && adWindow && !adWindow.closed) {
+    showMessage(`Ad Page එකේ ඉහත සදහන් කාලය ගෙවෙන තුරු රැඳී සිටින්න.`);
+  }
+});
+
+groupBtn.addEventListener('click', () => window.open("https://t.me/SL_XXX_LINK", "_blank"));
+clipsBtn.addEventListener('click', () => window.open("https://t.me/+yFvMxNRLu4g3YjM1", "_blank"));
+siteBtn.addEventListener('click', () => window.open("https://simpcitylk.neocities.org", "_blank"));
+
+function showMessage(text) {
+  earlyCloseMsg.textContent = text;
+  earlyCloseMsg.style.display = 'block';
+}
 </script>
 </body>
 </html>

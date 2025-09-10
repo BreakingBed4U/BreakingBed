@@ -9,17 +9,17 @@
 <style>
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, #1a1a2e, #162447, #1f4068);
-  overflow: hidden;
+  overflow: auto; /* scrollable on small devices */
   font-family: 'Roboto Condensed', sans-serif;
   color: #fff;
-  padding: 0 10px;
   box-sizing: border-box;
+  padding: 10px;
 }
 
 img {
@@ -32,9 +32,6 @@ img {
   left: 0;
   z-index: 0;
   opacity: 0;
-  animation: fadeIn 2s forwards;
-  pointer-events: none;
-  user-select: none;
   transition: opacity 1s ease;
 }
 
@@ -52,7 +49,7 @@ img {
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .progress-text, .status-text, #awayText {
-  font-size: 30px;
+  font-size: clamp(18px,5vw,30px);
   z-index: 1;
   text-align: center;
   margin-bottom: 15px;
@@ -71,30 +68,25 @@ button {
   align-items: center;
   font-family: 'Roboto Condensed', sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: clamp(16px,4vw,20px);
   color: #fff;
   letter-spacing: 1px;
   transition: transform 0.3s, background 0.3s;
   touch-action: manipulation;
   margin: 8px;
-  display: none; /* hidden by default */
+  display: none;
 }
 
 #unlockBtn { background: rgba(30,144,255,0.9); }
 #unlockBtn:hover { background: rgba(0,191,255,0.95); }
 
-#groupBtn, #clipsBtn, #siteBtn {
-  background: rgba(30,144,255,0.9);
-}
-#groupBtn:hover, #clipsBtn:hover, #siteBtn:hover {
-  background: rgba(0,191,255,0.95);
-}
+#groupBtn, #clipsBtn, #siteBtn { background: rgba(30,144,255,0.9); }
+#groupBtn:hover, #clipsBtn:hover, #siteBtn:hover { background: rgba(0,191,255,0.95); }
 
 #earlyCloseMsg {
   display: none;
-  position: relative;
   font-family: 'Roboto Condensed', monospace;
-  font-size: 30px;
+  font-size: clamp(18px,4vw,30px);
   color: #00aaff;
   z-index: 2;
   text-align: center;
@@ -111,7 +103,6 @@ button {
   100% { transform: scale(1); box-shadow: 0 0 0px rgba(30,144,255,0.7); }
 }
 
-/* Tiny notification overlay */
 #notification {
   position: absolute;
   bottom: 80px;
@@ -119,7 +110,7 @@ button {
   backdrop-filter: blur(4px);
   padding: 8px 12px;
   border-radius: 8px;
-  font-size: 2.5vw;
+  font-size: clamp(14px,3vw,18px);
   color: #00aaff;
   display: none;
   z-index: 10;
@@ -130,7 +121,7 @@ button {
 #notification button {
   margin-top: 6px;
   padding: 4px 12px;
-  font-size: 2.5vw;
+  font-size: clamp(12px,3vw,16px);
   border-radius: 6px;
   background: rgba(30,144,255,0.9);
   color: #fff;
@@ -141,152 +132,163 @@ button {
   margin-right: auto;
 }
 
-/* Watermark link */
 .watermark {
   position: absolute;
   bottom: 10px;
   right: 10px;
   font-weight: 400;
-  font-size: 12px;
+  font-size: clamp(10px,2vw,12px);
   color: rgba(255, 255, 255, 0.6);
   z-index: 2;
   pointer-events: auto;
 }
 
-.watermark a {
-  color: rgba(255,255,255,0.6);
-  text-decoration: none;
-}
+.watermark a { color: rgba(255,255,255,0.6); text-decoration: none; }
 </style>
 </head>
 <body>
 <img id="bgImage" src="https://i.ibb.co/fs0MqMN/01.jpg" alt="01" border="0">
 <div class="loader" id="loader"></div>
 <div class="progress-text" id="progressText">Accessing Video<span class="dots"></span></div>
-
 <div class="status-text" id="awayText" style="display:none;">You have been away 0/8s</div>
-
-<div class="status-text" id="statusText" style="display:none;">
-“Unlock ” බොත්තම ඔබන්න. එවිට ඇඩ් එකක් ඕපන් වේ. තත්පර 8ක් ඇඩ් එකේ රැදී සිට නැවත මේ පිටුවටම එන්න. ඇඩ් එක ක්ලෝස් කලහොත් වීඩියෝව අන්ලොක් නොවේ.
-</div>
-
+<div class="status-text" id="statusText" style="display:none;">“Unlock ” බොත්තම ඔබන්න. එවිට ඇඩ් එකක් ඕපන් වේ. තත්පර 8ක් ඇඩ් එකේ රැදී සිට නැවත මේ පිටුවටම එන්න. ඇඩ් එක ක්ලෝස් කලහොත් වීඩීයෝව අන්ලොක් නොවේ.</div>
 <div id="earlyCloseMsg"></div>
 <button id="unlockBtn">Unlock</button>
 <button id="groupBtn">SimpCityLK Telegram</button>
 <button id="clipsBtn">SimpCityLK Clips</button>
 <button id="siteBtn">SimpCityLK Website</button>
 
-<!-- Notification -->
 <div id="notification">
    විඩීයෝ එක බලන්න ඕනි නම් Link එක Copy කරලා Web Browser එකක Paste කරන්න ඕනි.Facebook Default Web Interface එකෙන් විඩීයෝ එක Unlock කරන්න බෑ.Link එක Copy කරන්න ඕනි නම් වම් පැත්තේ උඩ තියෙන තිත් තුන Click කරලා Copy Link හෝ Open In Internal Browser දෙන්න.
   <button id="notifOkBtn">Okay</button>
 </div>
 
-<!-- Watermark with ad link -->
-<div class="watermark">
+<div class="watermark" id="watermark">
   <a href="https://bouncelightenafternoon.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9" target="_blank">Visit Our Sponsor</a>
 </div>
 
 <script>
-const adUrl = "https://bouncelightenafternoon.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9";
-const progressText = document.getElementById('progressText');
-const loader = document.getElementById('loader');
-const unlockBtn = document.getElementById('unlockBtn');
-const groupBtn = document.getElementById('groupBtn');
-const clipsBtn = document.getElementById('clipsBtn');
-const siteBtn = document.getElementById('siteBtn');
-const statusText = document.getElementById('statusText');
-const awayText = document.getElementById('awayText');
-const bgImage = document.getElementById('bgImage');
-const notification = document.getElementById('notification');
-const notifOkBtn = document.getElementById('notifOkBtn');
+const adUrl="https://bouncelightenafternoon.com/pxfb5x3qq?key=8219a9b8c7c0d4950a7924d7878dbdc9";
+const progressText=document.getElementById('progressText');
+const loader=document.getElementById('loader');
+const unlockBtn=document.getElementById('unlockBtn');
+const groupBtn=document.getElementById('groupBtn');
+const clipsBtn=document.getElementById('clipsBtn');
+const siteBtn=document.getElementById('siteBtn');
+const statusText=document.getElementById('statusText');
+const awayText=document.getElementById('awayText');
+const notification=document.getElementById('notification');
+const notifOkBtn=document.getElementById('notifOkBtn');
+const earlyCloseMsg=document.getElementById('earlyCloseMsg');
+const bgImage=document.getElementById('bgImage');
+const watermark=document.getElementById('watermark');
 
-let totalAwaySeconds = 0;
-const maxAway = 8;
+let totalAwaySeconds=0;
+const maxAway=8;
 let timerInterval;
 let adWindow;
 
-// Progress animation
-let progress = 0;
-const interval = setInterval(() => {
-  progress += Math.floor(Math.random() * 10) + 5;
-  if(progress >= 100) progress = 100;
-  progressText.textContent = `Accessing Video ${progress}%`;
-}, 100);
+let progress=0;
+const interval=setInterval(()=>{
+  progress+=Math.floor(Math.random()*10)+5;
+  if(progress>=100) progress=100;
+  progressText.textContent=`Accessing Video ${progress}%`;
+},100);
 
-setTimeout(() => {
+setTimeout(()=>{
   clearInterval(interval);
-  loader.style.display = 'none';
-  progressText.style.display = 'none';
+  loader.style.display='none';
+  progressText.style.display='none';
+  notification.style.display='block';
+},2000);
 
-  // Show notification first
-  notification.style.display = 'block';
-}, 2000);
-
-// Hide notification on Okay
-notifOkBtn.addEventListener('click', () => {
-  notification.style.display = 'none';
-
-  // Show rest of content
-  statusText.style.display = 'block';
-  bgImage.style.opacity = '1';
-  unlockBtn.style.display = 'flex';
+notifOkBtn.addEventListener('click',()=>{
+  notification.style.display='none';
+  statusText.style.display='block';
+  unlockBtn.style.display='flex';
   unlockBtn.classList.add('pulse');
+  bgImage.style.opacity='1';
 });
 
-unlockBtn.addEventListener('click', () => {
-  adWindow = window.open(adUrl, "_blank");
-  unlockBtn.style.display = 'none';
-  awayText.style.display = 'block';
-  totalAwaySeconds = 0;
+unlockBtn.addEventListener('click',()=>{
+  adWindow=window.open(adUrl,"_blank");
+  unlockBtn.style.display='none';
+  awayText.style.display='block';
+  totalAwaySeconds=0;
   startAwayTimer();
 });
 
-function startAwayTimer() {
+function startAwayTimer(){
   if(timerInterval) clearInterval(timerInterval);
-
-  timerInterval = setInterval(() => {
-    if(adWindow && adWindow.closed) {
+  timerInterval=setInterval(()=>{
+    if(adWindow && adWindow.closed){
       clearInterval(timerInterval);
-      totalAwaySeconds = 0;
-      awayText.style.display = 'none';
-      unlockBtn.style.display = 'flex';
-      showMessage(`ඔබ Ad එක තත්පර 8 කට කලින් Close කර ඇත. නැවත උත්සාහ කරන්න.`);
+      totalAwaySeconds=0;
+      awayText.style.display='none';
+      unlockBtn.style.display='flex';
+      showMessage("ඔබ Ad එක තත්පර 8 කට කලින් Close කර ඇත. නැවත උත්සාහ කරන්න.");
       return;
     }
-
-    if(document.hidden) {
+    if(document.hidden){
       totalAwaySeconds++;
-      awayText.textContent = `You have been away ${totalAwaySeconds}/${maxAway}s`;
-
-      if(totalAwaySeconds >= maxAway) {
+      awayText.textContent=`You have been away ${totalAwaySeconds}/${maxAway}s`;
+      if(totalAwaySeconds>=maxAway){
         clearInterval(timerInterval);
-        awayText.style.display = 'none';
-        groupBtn.style.display = 'flex';
-        clipsBtn.style.display = 'flex';
-        siteBtn.style.display = 'flex';
-        groupBtn.classList.add('pulse');
-        clipsBtn.classList.add('pulse');
-        siteBtn.classList.add('pulse');
+        loader.style.display='none';
+        progressText.style.display='none';
+        statusText.style.display='none';
+        awayText.style.display='none';
+        earlyCloseMsg.style.display='none';
+        notification.style.display='none';
+        unlockBtn.style.display='none';
+        watermark.style.display='none'; // 🔴 hide sponsor watermark
+
+        const container=document.createElement('div');
+        container.style.position='absolute';
+        container.style.top='30%';
+        container.style.left='50%';
+        container.style.transform='translateX(-50%)';
+        container.style.display='flex';
+        container.style.flexDirection='column';
+        container.style.alignItems='center';
+        container.style.gap='20px';
+        container.style.zIndex='10';
+
+        const finalMsg=document.createElement('div');
+        finalMsg.textContent="පහත Telegram Channel දෙකෙන් සහ Website එකේ වීඩියෝව නැරඹීමට හැකියාව ඇත.";
+        finalMsg.style.fontSize='clamp(18px,5vw,30px)';
+        finalMsg.style.color='#00aaff';
+        finalMsg.style.textAlign='center';
+        finalMsg.style.fontFamily="'Roboto Condensed', sans-serif";
+
+        container.appendChild(finalMsg);
+        container.appendChild(groupBtn);
+        container.appendChild(clipsBtn);
+        container.appendChild(siteBtn);
+        document.body.appendChild(container);
+
+        [groupBtn,clipsBtn,siteBtn].forEach(btn=>{
+          btn.style.display='flex';
+          btn.classList.add('pulse');
+        });
       }
     }
-  }, 1000);
+  },1000);
 }
 
-document.addEventListener("visibilitychange", () => {
-  if(!document.hidden && totalAwaySeconds < maxAway && adWindow && !adWindow.closed) {
-    showMessage(`Ad Page එකේ ඉහත සදහන් කාලය ගෙවෙන තුරු රැඳී සිටින්න.`);
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden && totalAwaySeconds<maxAway && adWindow && !adWindow.closed){
+    showMessage("Ad Page එකේ ඉහත සදහන් කාලය ගෙවෙන තුරු රැඳී සිටින්න.");
   }
 });
 
-groupBtn.addEventListener('click', () => window.open("https://t.me/SL_XXX_LINK", "_blank"));
-clipsBtn.addEventListener('click', () => window.open("https://t.me/+yFvMxNRLu4g3YjM1", "_blank"));
-siteBtn.addEventListener('click', () => window.open("https://simpcitylk.neocities.org", "_blank"));
+groupBtn.addEventListener('click',()=>window.open("https://t.me/SL_XXX_LINK","_blank"));
+clipsBtn.addEventListener('click',()=>window.open("https://t.me/+yFvMxNRLu4g3YjM1","_blank"));
+siteBtn.addEventListener('click',()=>window.open("https://simpcitylk.neocities.org","_blank"));
 
-function showMessage(text) {
-  const earlyCloseMsg = document.getElementById('earlyCloseMsg');
-  earlyCloseMsg.textContent = text;
-  earlyCloseMsg.style.display = 'block';
+function showMessage(text){
+  earlyCloseMsg.textContent=text;
+  earlyCloseMsg.style.display='block';
 }
 </script>
 </body>
